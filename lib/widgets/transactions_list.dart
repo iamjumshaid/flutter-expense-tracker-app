@@ -4,61 +4,71 @@ import 'package:intl/intl.dart';
 
 class TransactionsList extends StatelessWidget {
   final List<Transaction> transactionsList;
+  final Function deleteTx;
 
-  TransactionsList({this.transactionsList});
+  TransactionsList({this.transactionsList, this.deleteTx});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 300,
-      child: ListView.builder(
-        itemBuilder: (context, index) {
-          return Card(
-            child: Row(
+      child: transactionsList.isEmpty
+          ? Column(
               children: [
-                Container(
-                  child: Text(
-                    '\$ ${transactionsList[index].price.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: Theme.of(context).primaryColorDark,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).primaryColorLight,
-                      width: 2,
-                    ),
-                  ),
-                  padding: EdgeInsets.all(10),
+                Text(
+                  'No transactions added for now.',
+                  style: Theme.of(context).textTheme.caption,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      transactionsList[index].title.toString(),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      DateFormat.yMMMEd().format(transactionsList[index].date),
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                )
+                SizedBox(height: 30),
+                Container(
+                  height: 200,
+                  child: Image.asset(
+                    'assets/images/waiting.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ],
+            )
+          : ListView.builder(
+              itemBuilder: (context, index) {
+                return Card(
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 5,
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: FittedBox(
+                          child: Text(
+                            '\$ ${transactionsList[index].price.toString()}',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      transactionsList[index].title,
+                      style: TextStyle(
+                        fontFamily: 'OpenSans',
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(transactionsList[index].date.toString()),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      color: Theme.of(context).errorColor,
+                      onPressed: () => deleteTx(transactionsList[index].id),
+                    ),
+                  ),
+                );
+              },
+              itemCount: transactionsList.length,
             ),
-          );
-        },
-        itemCount: transactionsList.length,
-      ),
     );
   }
 }
